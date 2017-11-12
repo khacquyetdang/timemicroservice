@@ -1,17 +1,18 @@
 {
-	"name": "fcc-learn-npm-package-json",
-	"dependencies": {
-		"express": "^4.14.0"
-	},
+	"name": "Timemicroservice",
 	"main": "server.js",
 	"scripts": {
 		"start": "node server.js"
 	},
 	"engines": {
-		"node": "4.4.5"
+		"node": "8.8.1"
 	},
 	"repository": {
 		"type": "git",
 		"url": "https://idontknow/todo.git"
+	},
+	"dependencies": {
+		"dateformat": "^3.0.2",
+		"express": "^4.16.2"
 	}
 }
