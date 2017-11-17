@@ -17,6 +17,10 @@ function isNumeric(num) {
 function isNumeric(num) {
   return !isNaN(num)
 }
+// Get client IP address from request object ----------------------
+const getClientAddress = function (req) {
+        return  req.connection.remoteAddress || (req.headers['x-forwarded-for'] || '').split(',')[0];
+};
 
 if (!process.env.DISABLE_XORIGIN) {
   app.use(function (req, res, next) {
@@ -47,6 +51,21 @@ app.route('/')
     res.sendFile(process.cwd() + '/views/index.html');
   });
 
+app.route('/api/whoami/').get(function (req, res) {
+ // var ifaces = os.networkInterfaces();
+  var ipAdresse = req.rawHeaders[1];
+  var _locale = req.rawHeaders[17].split(",")[0];
+  
+  var os = req.rawHeaders[7].split(")")[0].split("(")[1];
+
+    var result = {
+      "ipaddress": getClientAddress(req),
+      "language": _locale,
+      "software": os
+    };
+    res.send(result);
+});
+
 app.route('/:time').get(function (req, res) {
   var time = req.params.time;
   var result = {
@@ -64,7 +83,7 @@ app.route('/:time').get(function (req, res) {
       date = new Date(time);
     }
     result = {
-      "unix":  Math.floor(date.getTime() / 1000),
+      "unix": Math.floor(date.getTime() / 1000),
       "natural": dateFormat(date, 'mmmm dd, yyyy')
     };
   }
