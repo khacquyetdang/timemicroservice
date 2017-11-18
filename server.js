@@ -19,7 +19,7 @@ function isNumeric(num) {
 }
 // Get client IP address from request object ----------------------
 const getClientAddress = function (req) {
-        return  req.connection.remoteAddress || (req.headers['x-forwarded-for'] || '').split(',')[0];
+  return req.connection.remoteAddress || (req.headers['x-forwarded-for'] || '').split(',')[0];
 };
 
 if (!process.env.DISABLE_XORIGIN) {
@@ -52,18 +52,21 @@ app.route('/')
   });
 
 app.route('/api/whoami/').get(function (req, res) {
- // var ifaces = os.networkInterfaces();
+  // var ifaces = os.networkInterfaces();
   var ipAdresse = req.rawHeaders[1];
-  var _locale = req.rawHeaders[17].split(",")[0];
-  
-  var os = req.rawHeaders[7].split(")")[0].split("(")[1];
+  var _locale = req.headers['accept-language'].split(",")[0];
+  console.log(req.rawHeaders);
+  var os = req.headers['user-agent'].split(")")[0].split("(")[1];
 
-    var result = {
-      "ipaddress": getClientAddress(req),
-      "language": _locale,
-      "software": os
-    };
-    res.send(result);
+  var ip =  req.headers['x-forwarded-for'] !== undefined && req.headers['x-forwarded-for'] !== null ? req.headers['x-forwarded-for'].split(',')[0] : req.connection.remoteAddress;
+  console.log("raw 7 " + req.rawHeaders[7]);
+  var result = {
+    "ipaddress": ip,
+    "language": _locale,
+    "software": os
+  };
+  console.log(result);
+  res.send(result);
 });
 
 app.route('/:time').get(function (req, res) {
