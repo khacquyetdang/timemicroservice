@@ -4,29 +4,19 @@
 * ***************************************************/
 
 //'use strict';
-var mongodb = require('mongodb');
-const dateFormat = require('dateFormat');
-var pathToRegexp = require('path-to-regexp')
+
+var pathToRegexp = require('path-to-regexp');
 var fs = require('fs');
 var express = require('express');
 var app = express();
 var router = express.Router();
 var shorturl = require('./routes/shorturl');
 
-//We need to work with "MongoClient" interface in order to connect to a mongodb server.
-var MongoClient = mongodb.MongoClient;
 
 //(Focus on This Variable)
-var url = process.env.MONGOLAB_URI;
+var url = process.env.mongodb_url;
 console.log("mongolab url: ", url);
 
-function isNumeric(num) {
-  return !isNaN(num)
-}
-
-function isNumeric(num) {
-  return !isNaN(num)
-}
 // Get client IP address from request object ----------------------
 const getClientAddress = function (req) {
   return req.connection.remoteAddress || (req.headers['x-forwarded-for'] || '').split(',')[0];
@@ -100,34 +90,9 @@ console.log("regexpRes : ", regexpRes);
 
 //var newShortUrlRegex = /api\/shorturl\/new\/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/;
 
-app.use('/api/shorturl/new/', shorturl);
+app.use('/api/shorturl/', shorturl);
 
-app.route('/api/:time').get(function (req, res) {
-  var time = req.params.time;
-  var result = {
-    "unix": null,
-    "natural": null
-  };
-  var date = null;
-  try {
-    if (isNumeric(time)) {
-      console.log("Is numeric");
-      date = new Date(parseInt(time * 1000));
-    }
-    else {
-      console.log("Not Is numeric: ", time);
-      date = new Date(time);
-    }
-    result = {
-      "unix": Math.floor(date.getTime() / 1000),
-      "natural": dateFormat(date, 'mmmm dd, yyyy')
-    };
-  }
-  catch (e) {
-    console.log("erreur date format time", time, " erreur : ", e);
-  }
-  res.send(result);
-});
+app.use('/api/time', require('./routes/time'));
 
 // Respond not found to all the wrong routes
 app.use(function (req, res, next) {
