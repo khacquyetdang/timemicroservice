@@ -4,11 +4,21 @@
 * ***************************************************/
 
 //'use strict';
-
+var mongodb = require('mongodb');
 const dateFormat = require('dateFormat');
+var pathToRegexp = require('path-to-regexp')
 var fs = require('fs');
 var express = require('express');
 var app = express();
+var router = express.Router();
+var shorturl = require('./routes/shorturl');
+
+//We need to work with "MongoClient" interface in order to connect to a mongodb server.
+var MongoClient = mongodb.MongoClient;
+
+//(Focus on This Variable)
+var url = process.env.MONGOLAB_URI;
+console.log("mongolab url: ", url);
 
 function isNumeric(num) {
   return !isNaN(num)
@@ -37,6 +47,7 @@ if (!process.env.DISABLE_XORIGIN) {
 
 app.use('/public', express.static(process.cwd() + '/public'));
 
+
 app.route('/_api/package.json')
   .get(function (req, res, next) {
     console.log('requested');
@@ -51,14 +62,14 @@ app.route('/')
     res.sendFile(process.cwd() + '/views/index.html');
   });
 
-app.route('/api/whoami/').get(function (req, res) {
+app.get('/api/whoami/', function (req, res) {
   // var ifaces = os.networkInterfaces();
   var ipAdresse = req.rawHeaders[1];
   var _locale = req.headers['accept-language'].split(",")[0];
   console.log(req.rawHeaders);
   var os = req.headers['user-agent'].split(")")[0].split("(")[1];
 
-  var ip =  req.headers['x-forwarded-for'] !== undefined && req.headers['x-forwarded-for'] !== null ? req.headers['x-forwarded-for'].split(',')[0] : req.connection.remoteAddress;
+  var ip = req.headers['x-forwarded-for'] !== undefined && req.headers['x-forwarded-for'] !== null ? req.headers['x-forwarded-for'].split(',')[0] : req.connection.remoteAddress;
   console.log("raw 7 " + req.rawHeaders[7]);
   var result = {
     "ipaddress": ip,
@@ -68,8 +79,30 @@ app.route('/api/whoami/').get(function (req, res) {
   console.log(result);
   res.send(result);
 });
+//https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)
 
-app.route('/:time').get(function (req, res) {
+//app.param("originalUrl", /(https|http)?(www)?$/);
+//var router = app.router;
+//app.param('range', /^(\w+)\.\.(\w+)?$/);
+
+/*router.param('originalUrl', function(req,_, _, p){ 
+  return p.match(/^(\w+)\.\.(\w+)?$/);
+});*/
+
+
+
+//app.get('/api/shorturl/new/:originalUrl', function (req, res) {
+
+var regexp = pathToRegexp('https?:\/\/(www){0,1}');
+
+var regexpRes = regexp.exec("http://wwwaaaaabbcc");
+console.log("regexpRes : ", regexpRes);
+
+//var newShortUrlRegex = /api\/shorturl\/new\/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/;
+
+app.use('/api/shorturl/new/', shorturl);
+
+app.route('/api/:time').get(function (req, res) {
   var time = req.params.time;
   var result = {
     "unix": null,
