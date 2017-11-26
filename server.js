@@ -93,6 +93,7 @@ console.log("regexpRes : ", regexpRes);
 app.use('/api/shorturl/', shorturl);
 
 app.use('/api/time', require('./routes/time'));
+app.use('/api/imagesearch', require('./routes/imagesearch'));
 
 // Respond not found to all the wrong routes
 app.use(function (req, res, next) {
@@ -110,6 +111,8 @@ app.use(function (err, req, res, next) {
 })
 
 var port = process.env.PORT || 3000;
+console.log('env google api', process.env.GOOGLE_SEARCH_API);
+console.log('env ctx ', process.env.CTX);
 app.listen(port, function () {
   console.log('Node.js listening on port', port, "...");
 });

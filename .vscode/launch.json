@@ -10,7 +10,8 @@
             "request": "launch",
             "name": "Launch Program",
             //"program": "export mongodb_url=mongodb://apiprojectuser:toto963.@ds117156.mlab.com:17156/apiproject && ${workspaceFolder}\\server.js"
-            "program": "${workspaceFolder}\\server.js"
+            "program": "${workspaceFolder}\\server.js",
+            "envFile": "${workspaceFolder}/.env.development.local"
         }
     ]
 }
