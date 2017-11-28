@@ -52,6 +52,11 @@ app.route('/')
     res.sendFile(process.cwd() + '/views/index.html');
   });
 
+app.route('/filemicroservice')
+  .get(function (req, res) {
+    res.sendFile(process.cwd() + '/views/filemicroservice.html');
+  });
+
 app.get('/api/whoami/', function (req, res) {
   // var ifaces = os.networkInterfaces();
   var ipAdresse = req.rawHeaders[1];
@@ -91,7 +96,7 @@ console.log("regexpRes : ", regexpRes);
 //var newShortUrlRegex = /api\/shorturl\/new\/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&\/\/=]*)/;
 
 app.use('/api/shorturl/', shorturl);
-
+app.use('/api/getfilesize', require('./routes/getfilesize'));
 app.use('/api/time', require('./routes/time'));
 app.use('/api/imagesearch', require('./routes/imagesearch'));
 
